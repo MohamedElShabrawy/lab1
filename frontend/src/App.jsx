@@ -14,12 +14,15 @@ const today = new Date().toLocaleDateString(undefined, {
 export default function App() {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all'); // 'all' | 'active' | 'done'
 
   useEffect(() => {
-    fetchTodos()
+    setLoading(true);
+    const doneParam = filter === 'active' ? false : filter === 'done' ? true : undefined;
+    fetchTodos(doneParam)
       .then(data => { setTodos(data); setLoading(false); })
       .catch(err => { console.error(err); setLoading(false); });
-  }, []);
+  }, [filter]);
 
   const handleAdd = async (title) => {
     const newTodo = await createTodo(title);
@@ -53,6 +56,8 @@ export default function App() {
         <TodoList
           todos={todos}
           loading={loading}
+          filter={filter}
+          onFilterChange={setFilter}
           onToggle={handleToggle}
           onRename={handleRename}
           onRemove={handleRemove}
